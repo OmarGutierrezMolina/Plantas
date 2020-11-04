@@ -8,6 +8,7 @@
 int sensorDht=2;
 int temp, humedad;
 int valorTierra1, valorTierra2;
+int friendlyValue, friendlyValue2, friendlyValue3;
 #define tierra1 A0
 #define tierra2 A1
 
@@ -26,6 +27,6 @@ void setup() {
 void loop() { 
   ScreenTempMoist();
   Serial.print("Humedad suelo: ");
-  Serial.println(valorTierra1);
+  Serial.println(friendlyValue);
   delay(2000);
  }
