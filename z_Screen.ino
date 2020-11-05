@@ -80,7 +80,7 @@ void ScreenTempMoist(){
   readDHT();
   readTierra();
   lcd.setCursor(0,0);
-  lcd.print("----TEMPERATURA---");
+  lcd.print("----AMBIENTE---");
   lcd.setCursor(0,1);
   lcd.print("Temperatura: ");
   lcd.print(temp);
