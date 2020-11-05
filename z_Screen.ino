@@ -1,35 +1,63 @@
 //LCD MENU LOGIC
 
-const int numOfScreens = 3; //hora, temperatura, suelo
-const int numOfInputs = 4; //numero de botones
-const int inputPins[numOfInputs] = {4,5,6,7}; //pines de botones
-int lastInputState[numOfInputs] = {LOW,LOW,LOW,LOW};
-int currentScreen = 0;
+
 int menuvalue = 0;
 
 //SETEO DE MENUES
 
-String screens[numOfScreens][4]={{"-----------------","BIENVENIDO","HORA: ", "-----------------"},
-                                  {"---AMBIENTE---","Temperatura: ", "Humedad: ", "-----------------"},
-                                  {"---SUELO---","Tierra 1: ","Tierra 2: ", "Tierra 3: "}};
+//String screens[numOfScreens][4]={{"-----------------","BIENVENIDO","HORA: ", "-----------------"},
+//                                  {"---AMBIENTE---","Temperatura: ", "Humedad: ", "-----------------"},
+//                                  {"---SUELO---","Tierra 1: ","Tierra 2: ", "Tierra 3: "}};
 
+//navegación con botones
+void menuButton(){
+  //checkIfStandBy();
+  menu(menuvalue);
+  if(digitalRead(buttonDown)==HIGH){
+    menuvalue--;
+    menu(menuvalue);
+    if (menuvalue<0){
+      menuvalue=3;
+      menu(menuvalue);
+    }
+  }
+  else if(digitalRead(buttonUp)==HIGH){
+    menuvalue++;
+    menu(menuvalue);
+    if (menuvalue>=3){
+      menuvalue=0;
+      menu(menuvalue);
+    }
+  }
+}
 
-
-
-
+//menu de navegación
 void menu(int menuvalue){
   switch(menuvalue){
     case 0:
       ScreenTime();
+      break;
     case 1:
       ScreenTempMoist();
+      break;
     case 2:
       ScreenGround();
+      break;
   }
 }
 
+//FALTA MODULO RTC
+void  checkIfStandBy(){
+  if((timer-standByScreen>0)){
+    lcd.noBacklight();
+    if(buttonDown==HIGH || buttonUp==HIGH){
+      timer=0;
+      lcd.backlight();
+    }
+  }
+}
 
-
+//pantalla de inicialización
 void Start(){
   lcd.init();
   lcd.backlight();
@@ -46,8 +74,11 @@ void Start(){
   lcd.clear();
 }
 
+//pantalla con sensor de humedad y temperatura
 void ScreenTempMoist(){
+  lcd.clear();
   readDHT();
+  readTierra();
   lcd.setCursor(0,0);
   lcd.print("----TEMPERATURA---");
   lcd.setCursor(0,1);
@@ -65,6 +96,7 @@ void ScreenTempMoist(){
   
 }
 
+//pantalla con sensores de tierra
 void ScreenGround(){
   lcd.clear();
   readTierra();
@@ -78,17 +110,20 @@ void ScreenGround(){
   lcd.print(friendlyValue2);
   lcd.setCursor(0,3);
   lcd.print("Tierra 3: ");
-  lcd.print(" ");
   lcd.print(friendlyValue3);
 }
 
+//Pantalla inicial, tiempo y riego
 void ScreenTime(){
   lcd.clear();
   readTierra();
   lcd.setCursor(0,0);
-  lcd.print("---- BIENVENIDO -----");
+  lcd.print("---- BIENVENIDO ----");
   lcd.setCursor(7,1);
   lcd.print("HORA");
+  lcd.setCursor(1,2);
+  lcd.print("Riego ");
+  lcd.print(irrigation);
   lcd.setCursor(0,3);
   lcd.print("--------------------");
 }
